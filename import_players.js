@@ -1,12 +1,12 @@
-//const playerApi = require('./api/players');
-const AddBoid = require('../server/api/controllers/AddBoid');
-const UpdateBoid = require('../server/api/controllers/UpdateBoidById');
-const FindBoid = require('../server/api/controllers/FindBoidById');
+// const playerApi = require('./api/players');
+const AddBoid = require('../ultra_server/api/controllers/AddBoid');
+const UpdateBoid = require('../ultra_server/api/controllers/UpdateBoidById');
+const FindBoid = require('../ultra_server/api/controllers/FindBoidById');
 const league = process.env.LEAGUE || 'development';
 const utils = require('./utils').utils;
 const argv = require('minimist')(process.argv.slice(2));
 const game_date = argv.date;
-const csvFilePath = `../exports/${league.toUpperCase()}/${game_date}.csv`;
+const csvFilePath = `../ultra_exports/${league.toUpperCase()}/${game_date}.csv`;
 const Base64 = require('js-base64').Base64;
 const fs = require('fs');
 const _ = require('lodash');
@@ -99,39 +99,43 @@ const setAttRatings = (player) => {
   });
 
   player.mental_off_weighted = ((weights['mental_offWeight'].weightedSum / weights['mental_offWeight'].weightSum)/20)*100;
-  player.mental_def_weighted = ((weights['mental_defWeight'].weightedSum / weights['mental_defWeight'].weightSum)/20)*100;
-  player.mental_two_weighted = ((weights['mental_twoWeight'].weightedSum / weights['mental_twoWeight'].weightSum)/20)*100;
+  // player.mental_def_weighted = ((weights['mental_defWeight'].weightedSum / weights['mental_defWeight'].weightSum)/20)*100;
+  // player.mental_two_weighted = ((weights['mental_twoWeight'].weightedSum / weights['mental_twoWeight'].weightSum)/20)*100;
   
   player.physical_off_weighted = ((weights['physical_offWeight'].weightedSum / weights['physical_offWeight'].weightSum)/20)*100;
-  player.physical_def_weighted = ((weights['physical_defWeight'].weightedSum / weights['physical_defWeight'].weightSum)/20)*100;
-  player.physical_two_weighted = ((weights['physical_twoWeight'].weightedSum / weights['physical_twoWeight'].weightSum)/20)*100;
+  // player.physical_def_weighted = ((weights['physical_defWeight'].weightedSum / weights['physical_defWeight'].weightSum)/20)*100;
+  // player.physical_two_weighted = ((weights['physical_twoWeight'].weightedSum / weights['physical_twoWeight'].weightSum)/20)*100;
 
   player.technical_off_weighted = ((weights['technical_offWeight'].weightedSum / weights['technical_offWeight'].weightSum)/20)*100;
-  player.technical_def_weighted = ((weights['technical_defWeight'].weightedSum / weights['technical_defWeight'].weightSum)/20)*100;
-  player.technical_two_weighted = ((weights['technical_twoWeight'].weightedSum / weights['technical_twoWeight'].weightSum)/20)*100;
+  // player.technical_def_weighted = ((weights['technical_defWeight'].weightedSum / weights['technical_defWeight'].weightSum)/20)*100;
+  // player.technical_two_weighted = ((weights['technical_twoWeight'].weightedSum / weights['technical_twoWeight'].weightSum)/20)*100;
   
   player.combined_off_weighted = (player.technical_off_weighted + player.physical_off_weighted + player.mental_off_weighted)/3;
-  player.combined_def_weighted = (player.technical_def_weighted + player.physical_def_weighted + player.mental_def_weighted)/3;
-  player.combined_two_weighted = (player.technical_two_weighted + player.physical_two_weighted + player.mental_two_weighted)/3;
+  // player.combined_def_weighted = (player.technical_def_weighted + player.physical_def_weighted + player.mental_def_weighted)/3;
+  // player.combined_two_weighted = (player.technical_two_weighted + player.physical_two_weighted + player.mental_two_weighted)/3;
   
   
   player.attributes.mental_off_weighted = player.mental_off_weighted;
-  player.attributes.mental_def_weighted = player.mental_def_weighted;
-  player.attributes.mental_two_weighted = player.mental_two_weighted;
+  // player.attributes.mental_def_weighted = player.mental_def_weighted;
+  // player.attributes.mental_two_weighted = player.mental_two_weighted;
   
   player.attributes.physical_off_weighted = player.physical_off_weighted;
-  player.attributes.physical_def_weighted = player.physical_def_weighted;
-  player.attributes.physical_two_weighted = player.physical_two_weighted;
+  // player.attributes.physical_def_weighted = player.physical_def_weighted;
+  // player.attributes.physical_two_weighted = player.physical_two_weighted;
 
   player.attributes.technical_off_weighted = player.technical_off_weighted;
-  player.attributes.technical_def_weighted = player.technical_def_weighted;
-  player.attributes.technical_two_weighted = player.technical_two_weighted;
+  // player.attributes.technical_def_weighted = player.technical_def_weighted;
+  // player.attributes.technical_two_weighted = player.technical_two_weighted;
   
   player.attributes.combined_off_weighted = player.combined_off_weighted;
-  player.attributes.combined_def_weighted = player.combined_def_weighted;
-  player.attributes.combined_two_weighted = player.combined_two_weighted;
+  // player.attributes.combined_def_weighted = player.combined_def_weighted;
+  // player.attributes.combined_two_weighted = player.combined_two_weighted;
   
   player.combined_rating = player.mental_rating + player.physical_rating + player.technical_rating;
+
+  player.age_over = player.combined_rating / player.age;
+
+  player.attributes.age_over = player.age_over;
   player.attributes.mental_rating = player.mental_rating;
   player.attributes.physical_rating = player.physical_rating;
   player.attributes.technical_rating = player.technical_rating;
@@ -140,7 +144,7 @@ const setAttRatings = (player) => {
   return player;
 };
 
-const initPlayer = (doc) => {
+const initPlayer = doc => {
   const player = {};
   // general non-stat player properties
   player.ehm_id = parseInt(doc.Id, 10);
@@ -177,6 +181,7 @@ const initPlayer = (doc) => {
   // attributes hidden by the game, should probably not be revealed in UI
   player.attributes = {};
   player.attributes.att_growth = 0;
+  player.attributes.age_over = player.combined_rating;
   player.attributes.player_age = player.age;
   player.attributes.game_date = game_date;
   // player.attributes.loyalty = doc.Loyalty && parseInt(doc.Loyalty, 10);
