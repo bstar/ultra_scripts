@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.4",
     "axios": "^0.18.0",
     "js-base64": "^2.4.9",
     "json-2-csv": "^2.3.1",
